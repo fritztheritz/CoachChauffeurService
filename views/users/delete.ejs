@@ -1,0 +1,10 @@
+<!-- create a form to type in the user's password twice, if passwords in form are correct, it can delete the account -->
+
+<h1>Delete Account</h1>
+<form action="/users/<%= user._id %>/delete" method="POST">
+	<label for="password">Password</label>
+	<input type="password" name="password" id="password" required>
+	<label for="password2">Confirm Password</label>
+	<input type="password" name="password2" id="password2" required>
+	<input type="submit" value="Delete Account">
+</form>

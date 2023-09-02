@@ -1,0 +1,161 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script>
+  $(document).ready(function () {
+    function toggleFieldsVisibility() {
+      var selectedTripType = $("#tripType").val();
+      if (selectedTripType === "Regular Trip" || selectedTripType === "Road Trip") {
+        $("#packageDeliveryFields").show();
+      } else {
+        $("#packageDeliveryFields").hide();
+      }
+    }
+
+    // Call the function initially to set the initial visibility state
+    toggleFieldsVisibility();
+
+    // Bind an event listener to the dropdown to trigger the visibility update
+    $("#tripType").on("change", function () {
+      toggleFieldsVisibility();
+    });
+
+    var apiKey = '9z7MsARyM38it_uoEUnDtom5E3T6T4R4E_BZet_6SUM';
+    var pickupInput = $('#pickUpAddress');
+    var dropoffInput = $('#dropOffAddress');
+
+    pickupInput.autocomplete({
+      source: function (request, response) {
+        getAddressSuggestions(request.term, response);
+      },
+      select: function (event, ui) {
+        pickupInput.val(ui.item.value);
+        return false; // Prevent the default behavior of input value insertion
+      },
+    });
+
+    dropoffInput.autocomplete({
+      source: function (request, response) {
+        getAddressSuggestions(request.term, response);
+      },
+      select: function (event, ui) {
+        dropoffInput.val(ui.item.value);
+        return false; // Prevent the default behavior of input value insertion
+      },
+    });
+
+    function getAddressSuggestions(query, callback) {
+      var apiUrl = 'https://geocode.search.hereapi.com/v1/geocode';
+      var limits = "country=UnitedStates;state=Massachusetts";
+
+      $.ajax({
+        url: apiUrl,
+        method: 'GET',
+        data: {
+          qq: limits,
+          q: query,
+          apiKey: apiKey,
+        },
+        dataType: 'json',
+        success: function (data) {
+          var suggestions = data.items.map(function (item) {
+            return {
+              label: item.address.label,
+              value: item.address.label,
+            };
+          });
+          callback(suggestions);
+        },
+        error: function () {
+          callback([]); // Return an empty array in case of an error
+        },
+      });
+    }
+  });
+</script>
+
+
+<div class="container">
+  <div id="NewTrip" class="data-form"> 
+  <div id="tripInfo">
+    <div class = "text-center">
+    <h2>Book A Trip</h2>
+</div>
+    <p>Welcome to our trip booking page! We offer three types of trips to suit your needs:</p>
+    <p><strong>Regular Trip:</strong> This is a standard point-to-point trip, ideal for short-distance travels.</p>
+    <p><strong>Road Trip:</strong> Embark on an adventurous road trip that lasts for 4 or more hours.</p>
+    <p><strong>Package Delivery:</strong> Need to send a package? We've got you covered with reliable delivery services.</p>
+  </div>
+</div>
+
+<form action="/trips/create" method="POST" class="data-form"> 
+  <div class="form-group"> 
+    <label for="tripType">Trip Type</label>
+    <select name="tripType" id="tripType">
+      <option value="Regular Trip">Regular Trip</option>
+      <option value="Road Trip">Road Trip *4+ Hours* </option>
+      <option value="Package Delivery">Package Delivery </option>
+    </select>
+  </div>
+  <div class="form-group"> 
+    <label for="tripDate">Trip Date</label>
+    <input type="date" name="tripDate" id="tripDate" placeholder="Trip Date" min="" autofocus>
+  </div>
+  <% if (askEmailPhone) { %>
+    <div class="form-group">
+  <label for="tripUserEmail">Email</label>
+  <input type="email" name="tripUserEmail" id="tripUserEmail" required>
+</div>
+
+    <div class="form-group"> 
+      <label for="tripUserPhone">Phone Number</label>
+      <input type="tel" name="tripUserPhone" id="tripUserPhone" required>
+    </div>
+    <div class="form-group"> 
+      <label for="tripUserName">Full Name</label>
+      <input type="text" name="tripUserName" id="tripUserName" required>
+    </div>
+  <% } %>
+
+  <div class="form-group"> 
+    <label for="pickupAddress">Pick Up Address</label>
+    <input type="text" name="pickUpAddress" id="pickUpAddress" autofocus>
+  </div>
+  <div class="form-group"> 
+    <label for="dropOffAddress">Drop Off Address</label>
+    <input type="text" name="dropOffAddress" id="dropOffAddress" autofocus>
+  </div>
+  <div class="form-group"> 
+    <label for="pickUpTime">Pick Up Time</label>
+    <input type="time" name="pickUpTime" id="pickUpTime" placeholder="Pick Up Time" autofocus>
+  </div>
+  <div id="packageDeliveryFields">
+    <div class="form-group"> 
+      <label for="num_of_passengers">Number Of Passengers</label>
+      <input type="number" name="num_of_passengers" id="num_of_passengers" placeholder="Number Of Passengers" autofocus>
+    </div>
+  </div>
+  <div class="car" id="carFields">
+    <label for="carType">Car Type</label>
+    <select name="carType" id="carType">
+      <option value="4-Passenger">4 Passenger</option>
+      <option value="6-Passenger">6 Passenger</option>
+      <option value="7-Passenger">7 Passenger</option>
+    </select>
+  </div>
+  <div class="form-group"> 
+    <label for="specialInstructions">Special Instructions</label>
+    <input type="text" name="specialInstructions" id="specialInstructions" placeholder="Special Instructions" autofocus>
+  </div>
+  <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
+<script>
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementsByName("tripDate")[0].setAttribute("min", today);
+
+  const now = new Date().toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' });
+  document.getElementsByName("pickUpTime")[0].setAttribute("min", now);
+</script>

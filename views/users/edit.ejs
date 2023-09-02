@@ -1,0 +1,69 @@
+<div class="data-form">
+	<form method="POST" action="<%=`/users/${user._id}/update?_method=PUT`%>" id="editUser" style="margin-bottom: 5%;"> 
+	  <h2 style="padding-top: 4%;">Edit user:</h2>
+	  <label for="inputFirstName">First Name<span class="required">*</span></label>
+	  <br>
+	  <input
+		type="text"
+		name="firstName"
+		id="first_name"
+		value="<%= user.firstName %>"
+		placeholder="First Name"
+		autofocus
+	  />
+	  <br>
+	  <label for="inputName">Last Name<span class="required">*</span></label>
+	  <br>
+	  <input
+		type="text"
+		name="lastName"
+		id="last_name"
+		value="<%= user.lastName %>"
+		placeholder="Last Name"
+		autofocus
+	  />
+	  <br>
+	  <label for="inputEmail">Email Address<span class="required">*</span></label>
+	  <br>
+	  <input
+		type="email"
+		name="email"
+		id="email"
+		value="<%= user.email %>"
+		placeholder="Email address"
+	  />
+	  <br>
+	  <!-- if it doesn't have all info, it hides the password field -->
+	  <% if(hasAllInfo && !user.googleId) { %>
+		<label for="inputOldPassword">Old Password</label>
+		<br>
+		<input
+			type="password"
+			name="oldPassword"
+			id="inputPassword"
+			placeholder="Old Password"
+		/>
+		<br>
+		<label for="inputPassword">New Password</label>
+		<br>
+		<input
+			type="password"
+			name="password"
+			id="inputPassword"
+			placeholder="Password"
+		/>
+		<br>
+	  <% } %>
+	  <label for="inputPhone">Phone Number<span class="required">*</span></label>
+	  <br>
+	  <input
+		type="tel"
+		name="phoneNumber"
+		id="inputPhoneNumber"
+		value="<%= user.phoneNumber %>"
+		placeholder="Phone Number"
+	  />
+	  <br>
+	  <button type="submit" style="margin-top: 2%;">Update</button>
+	</form>
+  </div>

@@ -1,0 +1,44 @@
+<!-- form to input all information about the user according to the schema -->
+
+
+<div class="login-container">
+	<h1>Hello There!</h1>
+	<h3 style="padding-bottom: 2%;">Continue with Google or enter your details.</h3>
+
+	<div class="google-container">
+		<div class="google-content">
+			<img width="20px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+		  	<a href="/auth/google" role="button" style="text-decoration: none; color: black;">
+				<p style="margin-top: 8%;">Log in with Google</p>
+		  	</a>
+		</div>
+	  </div>
+
+	<div class="horizontal-container">
+		<div class="horizontal-line">
+			<span class="or-text">or</span>
+		</div>
+	</div>
+
+	<form action="/users/create" method="POST">
+		<input type="text" name="firstName" id="first_name" placeholder="First Name" value="<%= firstName %>"><br>
+		<input type="text" name="lastName" id="last_name" placeholder="Last Name" value="<%= lastName %>"><br>
+		<input type="text" name="email" id="email" placeholder="Email" value="<%= email %>"><br>
+		<input type="password" name="password" id="password" placeholder="Password"><br>
+		<input type="password" name="confirmPassword" id="password2" placeholder="Confirm Password"><br>
+		<input type="tel" name="phoneNumber" id="phone_number" placeholder="Phone Number" value="<%= phoneNumber %>"><br>
+		<input type="submit" value="Sign Up" id="newUserCreate">
+	</form>
+	<p>Already have an account? <a href="/users/login" style="color: black;"><strong>Log in here</strong></a></p>
+</div>
+
+
+  
+
+
+
+
+
+
+
+

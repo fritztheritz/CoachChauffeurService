@@ -1,0 +1,116 @@
+<script src="https://kit.fontawesome.com/dd1095c4ad.js" crossorigin="anonymous"></script>
+
+<style>
+    .button-container {
+  display: flex;
+  /* gap: 10px; */
+}
+</style>
+
+<script>
+    function handleSort() {
+        var url = document.getElementById("original").value;
+        window.location.href = url;
+    }
+</script>
+
+<div class="text-center">
+    <h2>Refunds Table</h2>
+	<div class="index-container">
+		<select name="cat" id="original" class="postform" onchange="handleSort()">
+			<option value="-1">Sort By Status</option>
+			<option class="level-0" value="/trips/refund-requests">All</option>
+			<option class="level-0" value="/trips/refund-requests?refundStatus=Pending">Pending</option>
+			<option class="level-0" value="/trips/refund-requests?refundStatus=Approved">Approved</option>
+			<option class="level-0" value="/trips/refund-requests?refundStatus=Denied">Denied</option>
+		</select>
+	</div>
+    <% if (refunds.length === 0) { %>
+        <p>No refunds to display</p>
+    <% } %>
+</div>
+<% if (currentUser && currentUser.isAdmin && loggedIn) { %>
+    <div class="d-flex flex-wrap justify-content-center">
+        <% for (var i = 0; i < refunds.length; i++) { %>
+			<%
+					// Assuming 'date' is a JavaScript Date object
+					var modifiedDate = new Date(refunds[i].trip.tripDate);
+					modifiedDate.setHours(modifiedDate.getHours() + 4);
+					var options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+				%>
+            <div class="card m-3">
+                <div class="card-body">
+                    <h5 class="card-title"><%= refunds[i].trip.tripUserName %></h5>
+                    <p><strong>Trip Date:</strong> <%= modifiedDate.toLocaleString('en-US', options); %></p>
+                    <p><b>Name</b>: <%= refunds[i].trip.tripUserName %></p>
+                    <p><b>Price</b>: $<%= refunds[i].trip.price %></p>
+                    <p><b>Requested Refund Amount</b>: $<%= refunds[i].refundAmount %></p>
+                    <p><b>Refund Reason</b>: <%= refunds[i].refundReason %></p>
+                    <p><b>Refund Status</b>: <%= refunds[i].refundStatus %></p>
+                    <p><b>Refund Notes</b>: <%= refunds[i].refundNotes %></p>
+                    <% if (refunds[i].refundStatus === 'Pending') { %>
+                        <div class="button-container">
+                            <form action="/trips/refunds/<%= refunds[i]._id %>/approve" method="POST" onsubmit="return confirm('Are you sure you want to approve this refund?')">
+                                <button class="btn btn-success" type="submit" style="background-color: green;">Approve</button>
+                            </form>
+                            <form action="/trips/refunds/<%= refunds[i]._id %>/deny" method="POST" onsubmit="return confirm('Are you sure you want to deny this refund?')">
+                                <button class="btn btn-danger" type="submit" style="background-color: red;">Deny</button>
+                            </form>
+                            <button class="btn btn-info" onclick="window.location.href='/trips/<%= refunds[i].trip._id %>'" style="color: white;">
+                                More Info
+                            </button>
+                        </div>   
+                      <% } %>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+	<div class="pagination justify-content-center">
+		<% if (currentPage > 1) { %>
+			<a class="arrow arrow-left" href="?refundStatus=<%=searchOptions %>&page=<%= currentPage - 1 %>&limit=<%= limit %>">
+				<span aria-hidden="true">&laquo;</span>
+				<span class="sr-only">Previous</span>
+			</a>
+		  <% } %>
+		<%
+		// Define a variable to track the loop count
+		let loopCount = 0;
+
+		// Find the index of the currentPage in the pages array
+		let currentPageIndex = pages.findIndex(function(page) {
+			return (typeof page === 'object' && page.hasOwnProperty('number')) ? page.number === currentPage : page === currentPage;
+		});
+		%>
+
+		<% for (let i = currentPageIndex; i < pages.length; i++) { %>
+			<% const page = pages[i]; %>
+
+			<% if (loopCount >= 5) { %>
+				<% break; %> <!-- Break the loop after displaying the currentPage and the following four numbers -->
+			<% } %>
+
+			<% if (typeof page === 'object' && page.hasOwnProperty('number')) { %>
+				<% if (page.number === currentPage) { %>
+				<a class="page-item active"><%= page.number %></a>
+				<% } else { %>
+				<a href="?refundStatus=<%=searchOptions %>&page=<%= page.number %>&limit=<%= limit %>"><%= page.number %></a>
+				<% } %>
+			<% } else if (typeof page === 'number') { %>
+				<% if (page === currentPage) { %>
+				<a class="page-item active"><%= page %></a>
+				<% } else { %>
+				<a href="?refundStatus=<%=searchOptions %>&page=<%= page %>&limit=<%= limit %>"><%= page %></a>
+				<% } %>
+			<% } %>
+
+			<% loopCount++; %>
+		<% } %>
+		<% if (currentPage < pages.length) { %>
+			<a class="arrow arrow-right" href="?refundStatus=<%=searchOptions %>&page=<%= currentPage + 1 %>&limit=<%= limit %>">
+				<span aria-hidden="true">&raquo;</span>
+				<span class="sr-only">Next</span>
+			</a>
+		<% } %>
+	</div>
+<% } %>

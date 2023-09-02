@@ -1,0 +1,85 @@
+<div class="container-xxl py-5">
+	<div class="container">
+		<div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+			<h1 class="mb-5">Request a Refund</h1>
+		</div>
+		<div class="row g-4">
+			<div class="col-12">
+				<div class="row gy-4">
+					<div class="col-md-4">
+						<div class="bg-light d-flex flex-column justify-content-center p-4">
+							<h5 class="text-uppercase">Email </h5>
+							<p class="m-0"><i class="fa fa-envelope-open text-primary me-2"></i>noreplycoachchauffeur@gmail.com</p>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="bg-light d-flex flex-column justify-content-center p-4">
+							<h5 class="text-uppercase">Phone Number</h5>
+							<p class="m-0"><i class="fa fa-phone-alt" style = "color:red"></i> 617-529-6826</p>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="bg-light d-flex flex-column justify-content-center p-4">
+							<h5 class="text-uppercase">Technical</h5>
+							<p class="m-0"><i class="fa fa-envelope-open text-primary me-2"></i>JohnLervandal@gmail.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- <div class="col-md-6 wow fadeIn" data-wow-delay="0.1s">
+				<img src="images/contact.jpg" alt="image" class="position-relative rounded w-100 h-100" style = "min-height: 350px; border:0;">
+	
+			</div> -->
+			<div class="col-md-6" style="margin: 0 auto;">
+				<div class="wow fadeInUp" data-wow-delay="0.2s">
+					<p class="mb-4 pt-4 text-center">Please fill out the following information to request a refund, and we will get back to you as soon as we can!</p>				
+						<form action="/trips/<%= trip.id %>/refund" method="POST" style="display: inline-block; margin: 0 auto;">
+						<div class="row g-3 ">
+							<div class="col-mid-20">
+								<div class="form-floating">
+									<input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required style = "width: 200%">
+									<label for="name">First Name</label>
+								</div>
+							</div>
+							<div class="col-mid-20">
+								<div class="form-floating">
+									<input type="text" class="form-control" id="lastName" name = "lastName" placeholder="Last Name" required style = "width: 200%">
+									<label for="email">Last Name</label> 
+								</div>
+							</div>
+							<div class="col-mid-20">
+								<div class="form-floating">
+									<input type="text" class="form-control" id="email" name = "email" placeholder="Email" value="<%= trip.tripUserEmail %>" required style = "width: 200%">
+									<label for="email">Email</label>
+								</div>
+							</div>
+
+							<div class="col-12">
+								<div class="form-floating">
+									<input type="text" class="form-control" id="bookingNumber" name = "bookingNumber" placeholder="Enter Your 10 character booking number." value="<%= trip.tripCode %>" required style = "width: 200%">
+									<label for="subject">Booking Number</label>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-floating">
+									<input type="text" class="form-control" id="refundAmount" name = "refundAmount" placeholder="Enter the price of the trip." value="<%= trip.price %>" required style = "width: 200%">
+									<label for="subject">Refund Amount</label>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-floating">
+									<textarea class="form-control" placeholder="Leave a message here" id="reason" name = "refundReason" required style="height: 100px; width: 200%" ></textarea>
+									<label for="message">Reason For Refund</label>
+								</div>
+							</div>
+							<input type="hidden" name="trip" value="<%= trip._id %>" />
+							<div class="col-12">
+								<button class="btn btn-primary w-100 py-3" style = "margin: auto 0" type="submit">Send Request</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

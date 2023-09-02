@@ -1,0 +1,93 @@
+<% if(successMessage) { %>
+	<div class="flash success">
+		<%= successMessage %>
+	</div>
+<% } %>
+
+<div class="container">
+  <div class="temp">
+    <h2 class="temp-heading">Search Your Resevation Here!</h2>
+    <div class="trip-search-container">
+      <form action="/trips/search" method="GET" id="tripSearch" class="trip-search-form">
+        <label for="tripCode">Booking Code</label>
+        <input type="text" name="tripCode" id="tripCode" placeholder="Enter Booking Code" required>
+        <button type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Common styles for the container and content */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .temp {
+    text-align: center;
+    margin-top: 2%;
+  }
+
+  /* Style for the success message */
+  .flash.success {
+    background-color: #8bc34a;
+    color: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+
+  /* Style for the "Already Have A Trip Booked?" section */
+  .temp-heading {
+    margin-bottom: 20px;
+  }
+
+  .trip-search-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Style for the search form */
+  .trip-search-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .trip-search-form label {
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+
+  .trip-search-form input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+
+  .trip-search-form button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .trip-search-form button:hover {
+    background-color: #0056b3;
+  }
+
+  /* Add media query for responsive layout */
+  @media screen and (max-width: 768px) {
+    .trip-search-form {
+      max-width: 100%;
+    }
+  }
+</style>

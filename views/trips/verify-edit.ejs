@@ -1,0 +1,16 @@
+<div class="text-center">
+  <h1>Verification</h1>
+  <p>In order to ensure it's really you we ask you for your booking code for your safety.</p>
+</div>
+
+  <form method="POST" action="/trips/<%= id %>/verify-edit">
+    <div class="text-center">
+      <label for="code">Booking Code</label>
+    </div>
+    
+    <input type="text" id="code" name="code" required>
+    <div class="d-flex justify-content-center">
+      <button type="submit" class="btn btn-primary text-center">Verify</button>
+    </div>
+    
+      </form>

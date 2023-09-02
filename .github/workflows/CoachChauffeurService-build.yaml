@@ -1,0 +1,63 @@
+# To better understand this file read this:
+# https://docs.ionos.space/docs/github-actions-customization/
+
+name: "Deploy Now: Execute Build"
+
+on:
+  workflow_call:
+    inputs:
+      site-url:
+        required: true
+        type: string
+      branch-id:
+        required: true
+        type: string
+
+env:
+  DEPLOYMENT_FOLDER: ./
+
+jobs:
+# Please do not rename this job
+  build-project:
+    name: build CoachChauffeurService
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: v16.x
+
+      - name: Build Node assets
+        env:
+          apass: 'xqkwzbjbnfeiktsa'
+          CI: true
+          clientID: '983691463787-8hqlu679d9vg9qsbft9nnsma7bm7giid.apps.googleusercontent.com'
+          clientSecret: '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'
+          EMAILPASS: "mUUMgrA3q0ra2UOVGglDyN2NcT0NeZjR"
+          MPASS: "AIzaSyCqy5ZZHzKCmLu80EpgTBCGMiju8GzMZS0"
+          NODE_ENV: 'production'
+          password: 'wilsonisthegoat'
+          SITE_URL: ${{ inputs.site-url }}
+          SQUARE_ACCESS_TOKEN: 'EAAAEEm329XC0wprtF_aaHXLsMLb_Hxh2BT-_f37kyn9H7tNnPlAz2dC7fGMXY0t'
+          SQUARE_APPLICATION_ID: 'sandbox-sq0idb-Gnvx0TbfarfAA6D1LO36xQ'
+          SQUARE_LOCATION_ID: 'LGB29KW28HTB2'
+          username: 'Wilson'
+        run: npm install
+
+# Please do not touch the following action
+      - name: Store deployment content
+        uses: ionos-deploy-now/artifact-action@v1
+        with:
+          api-key: ${{ secrets.IONOS_API_KEY }}
+          service-host: api-us.ionos.space
+          project-id: bb3a95a5-9779-4c03-9077-07f6b83d0d9d
+          branch-id: ${{ inputs.branch-id }}
+          version: ${{ github.sha }}
+          folder: ${{ env.DEPLOYMENT_FOLDER }}
+          config-file: .deploy-now/CoachChauffeurService/config.yaml
+          action: upload

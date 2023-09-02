@@ -1,0 +1,46 @@
+
+<div class="login-container">
+	<h1>Welcome Back!</h1>
+	<h3 style="padding-bottom: 2%;">Continue with Google or enter your details.</h3>
+
+	<div class="google-container">
+		<div class="google-content">
+			<img width="20px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+		  	<a href="/auth/google" role="button" style="text-decoration: none; color: black;">
+				<p style="margin-top: 8%;">Log in with Google</p>
+		  	</a>
+		</div>
+	  </div>
+
+	<div class="horizontal-container">
+		<div class="horizontal-line">
+			<span class="or-text">or</span>
+		</div>
+	</div>
+
+	<form action="/users/login" method="POST">
+		<input
+		type="email"
+		name="email"
+		id="inputEmail"
+		placeholder="Email address"
+		required
+		/>
+		<br>
+		<input
+		type="password"
+		name="password"
+		id="inputPassword"
+		placeholder="Password"
+		required
+		/>
+		<br>
+		<button type="submit" class="login-button">Log in</button>
+	</form>
+
+	<p>Don't have an account? <a href="/users/new" style="color: black;"><strong>Sign up for free</strong></a></p>
+	<p>Forgot your password? <a href="/users/forgot-password" style="color: black;"><strong>Click here to reset your password</strong></a></p>
+</div>
+
+
+  

@@ -1,0 +1,151 @@
+<div class="profile">
+	<div class="profile-left">
+		<div class="profile-info">
+			<div style="display: flex;">
+				<h2><%= user.fullName %></h2>
+				<a href="<%= `/users/${user._id}/edit` %>" class="edit-icon">		
+					<i class="fa-solid fa-gear fa-lg"></i>
+				</a>
+			</div>
+			<% if (user.isAdmin) { %>
+				<p><strong>Admin</strong></p>
+			<% } %>
+			<p><strong>Email:</strong> <%= user.email %></p>
+			<p><strong>Phone Number:</strong> <%= user.phoneNumber %></p>
+		</div>
+	</div>
+</div>
+<h1 class="text-center">Your Trips</h1>
+
+<script src="https://kit.fontawesome.com/dd1095c4ad.js" crossorigin="anonymous"></script>
+<div class="index-container mb-3">
+    <select name="cat" id="original" class="postform" onchange="handleSort()">
+        <option value="-1">Sort By Status</option>
+        <option class="level-0" value="/users/<%= user._id %>?tripStatus=All">All</option>
+        <option class="level-0" value="/users/<%= user._id %>?tripStatus=Pending">Pending</option>
+        <option class="level-0" value="/users/<%= user._id %>?tripStatus=Confirmed">Confirmed</option>
+        <option class="level-0" value="/users/<%= user._id %>?tripStatus=Completed">Completed</option>
+        <option class="level-0" value="/users/<%= user._id %>?tripStatus=Cancelled">Cancelled</option>
+    </select>
+</div>
+
+<script>
+    function handleSort() {
+        var url = document.getElementById("original").value;
+        window.location.href = url;
+    }
+</script>
+
+<% if (!trips || trips.length === 0) { %>
+    <div class="text-center">
+        <p>You have no trips.</p>
+    </div>
+<% } else { %>
+    <div class="d-flex flex-wrap justify-content-center">
+        <% for (var i = 0; i < trips.length; i++) { %>
+			<%
+				// Assuming 'date' is a JavaScript Date object
+				var modifiedDate = new Date(trips[i].tripDate);
+				modifiedDate.setHours(modifiedDate.getHours() + 4);
+				var options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+
+				let [hours, minutes] = trips[i].pickUpTime.split(":").map(Number);
+				let period = "AM";
+				
+				if (hours >= 12) {
+					period = "PM";
+					if (hours > 12) {
+						hours -= 12;
+					}
+				}
+
+				let time = `${hours}:${minutes.toString().padStart(2, "0")} ${period}`;
+			%>
+            <div class="card m-3">
+                <div class="card-body">
+                    <h5 class="card-title"><%= trips[i].tripUserName %></h5>
+					<p>Trip Type: <%= trips[i].tripType %></p>
+                    <p>Trip Date: <%= modifiedDate.toLocaleString('en-US', options); %></p>
+                    <p>Pick Up Address: <%= trips[i].pickUpAddress %></p>
+                    <p>Drop Off Address: <%= trips[i].dropOffAddress %></p>
+                    <p>Pick Up Time: <%= time %></p>
+                    <p>Number of Passengers: <%= trips[i].num_of_passengers %></p>
+                    <p>Special Instructions: <%= trips[i].specialInstructions %></p>
+                    <p>Trip Status: <%= trips[i].tripStatus %></p>
+                    <p>Trip Code: <%= trips[i].tripCode %></p>
+                    <% if (trips[i].tripStatus === "Completed" && !trips[i].refunded) { %>
+                        <button class="refund-button" onclick="window.location.href='/trips/<%= trips[i]._id %>/refund'">Request a refund</button>
+                    <% } else if (trips[i].tripStatus === "Pending") { %>
+                        <button class="btn btn-success" onclick="window.location.href='/trips/<%= trips[i]._id %>/verify-edit'">Edit Trip</button>
+                        <button class="btn btn-danger" onclick="window.location.href='/trips/<%= trips[i]._id %>/verify-cancel'">Cancel Trip</button>
+					<% } else if (trips[i].tripStatus === "Confirmed" && trips[i].paid) { %>
+						<button class="btn btn-danger" onclick="window.location.href='/trips/<%= trips[i]._id %>/verify-cancel'">Cancel Trip</button>
+					<% } else if(trips[i].tripType === "Road Trip" && trips[i].tripStatus === "Confirmed" && !trips[i].paid) { %>
+						<button class="btn btn-dark" onclick="window.location.href='/trips/<%= trips[i]._id %>/payment/completePayment'">Confirm Payment</button>
+						<button class="btn btn-danger" onclick="window.location.href='/trips/<%= trips[i]._id %>/verify-cancel'">Cancel Trip</button>
+                    <% } else if (trips[i].tripStatus === "Confirmed") { %>
+						<button class="btn btn-dark" onclick="window.location.href='/trips/<%= trips[i]._id %>/payment'">Pay Now</button>
+                        <button class="btn btn-danger" onclick="window.location.href='/trips/<%= trips[i]._id %>/verify-cancel'">Cancel Trip</button>
+					<% } %>
+					<% if(trips[i].tripStatus === "Completed" && trips[i].tripType === "Road Trip" && !trips[i].paid && trips[i].priceUpdated) { %>
+						<button class="btn btn-dark" onclick="window.location.href='/trips/<%= trips[i]._id %>/payment/completePayment'">Confirm Payment</button>
+					<% } %>
+                    <button class="btn btn-info" onclick="window.location.href='/trips/<%= trips[i]._id %>'">Trip Status</button><br><br>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+		<!-- pagination -->
+		<div class="pagination justify-content-center">
+			<% if (currentPage > 1) { %>
+				<a class="arrow arrow-left" href="?page=<%= currentPage - 1 %>&limit=<%= limit %>">
+					<span aria-hidden="true">&laquo;</span>
+					<span class="sr-only">Previous</span>
+				</a>
+			  <% } %>
+			<%
+			// Define a variable to track the loop count
+			let loopCount = 0;
+	
+			// Find the index of the currentPage in the pages array
+			let currentPageIndex = pages.findIndex(function(page) {
+				return (typeof page === 'object' && page.hasOwnProperty('number')) ? page.number === currentPage : page === currentPage;
+			});
+			%>
+	
+			<% for (let i = currentPageIndex; i < pages.length; i++) { %>
+				<% const page = pages[i]; %>
+	
+				<% if (loopCount >= 5) { %>
+					<% break; %> <!-- Break the loop after displaying the currentPage and the following four numbers -->
+				<% } %>
+	
+				<% if (typeof page === 'object' && page.hasOwnProperty('number')) { %>
+					<% if (page.number === currentPage) { %>
+					<a class="page-item active"><%= page.number %></a>
+					<% } else { %>
+					<a href="?tripStatus=<%=searchOptions %>&page=<%= page.number %>&limit=<%= limit %>"><%= page.number %></a>
+					<% } %>
+				<% } else if (typeof page === 'number') { %>
+					<% if (page === currentPage) { %>
+					<a class="page-item active"><%= page %></a>
+					<% } else { %>
+					<a href="?tripStatus=<%=searchOptions %>&page=<%= page %>&limit=<%= limit %>"><%= page %></a>
+					<% } %>
+				<% } %>
+	
+				<% loopCount++; %>
+			<% } %>
+			<% if (currentPage < pages.length) { %>
+				<a class="arrow arrow-right" href="?page=<%= currentPage + 1 %>&limit=<%= limit %>">
+					<span aria-hidden="true">&raquo;</span>
+					<span class="sr-only">Next</span>
+				</a>
+			<% } %>
+		</div>
+		
+	<% } %>
+</div>
+
+

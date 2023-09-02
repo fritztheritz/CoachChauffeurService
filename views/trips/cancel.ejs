@@ -1,0 +1,10 @@
+<div class="data-form">
+    <form method="POST" action="/trips/<%= trip._id %>/cancel">
+      <h2>Cancel Trip</h2>
+      <p>Please provide a reason for cancelling the trip:</p>
+      <textarea name="cancellationReason" rows="4" placeholder="Cancellation Reason" required></textarea>
+      <br>
+      <button type="submit">Confirm Cancellation</button>
+    </form>
+  </div>
+  

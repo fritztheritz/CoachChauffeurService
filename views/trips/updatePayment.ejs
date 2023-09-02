@@ -1,0 +1,12 @@
+<form method="POST" action="/trips/<%= trip._id %>/payment/updatePayment" id="editTrip">
+	<div class = "text-center">
+		<h1>Enter Updated Price</h1>
+	</div>
+
+	<div class="form-group">
+        <label for="price">Price</label>
+        <input type="number" name="price" id="price" step="any" value="<%= trip.price %>" class="form-control" placeholder="Price" autofocus>
+    </div>
+
+	<input type="submit" value="Approve" class="btnedit">
+</form>

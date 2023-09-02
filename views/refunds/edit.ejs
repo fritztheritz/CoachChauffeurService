@@ -1,0 +1,42 @@
+<div class = "data-form">
+    <form method = "POST" action="/trips/<%= refund.trip._id %>/refund/<%= refund._id %>/update?_method=PUT" id = "editRefund">
+        <h2>Edit Refund Request</h2>
+		<label for = "refundAmount">Refund Amount</label><br>
+		<input
+			type = "number"
+			name = "refundAmount"
+			id = "refundAmount"
+			value = "<%= refund.refundAmount %>"
+			placeholder = "Refund Amount"
+			autofocus
+		/><br>
+		<label for = "refundReason">Refund Reason</label><br>
+		<input
+			type = "text"
+			name = "refundReason"
+			id = "refundReason"
+			value = "<%= refund.refundReason %>"
+			placeholder = "Refund Reason"
+			autofocus
+		/><br>
+		<label for = "refundStatus">Refund Status</label><br>
+		<select name="refundStatus" id="refundStatus" >
+			<option value="Pending" <% if(refund.refundStatus === "Pending") { %> selected <% } %>>Pending</option>
+			<option value="Approved" <% if(refund.refundStatus === "Approved") { %> selected <% } %>>Approved</option>
+			<option value="Denied" <% if(refund.refundStatus === "Denied") { %> selected <% } %>>Denied</option>
+		</select><br><br>
+		<label for = "refundNotes">Refund Notes</label><br>
+		<textarea
+			name = "refundNotes"
+			id = "refundNotes"
+			placeholder = "Refund Notes"
+			autofocus
+		><%= refund.refundNotes %></textarea><br>
+
+        <input type="submit" value="Submit">
+    </form>    
+    <br>
+    <br>
+
+  </div>
+ 

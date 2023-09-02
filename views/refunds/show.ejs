@@ -1,0 +1,33 @@
+<body>
+	<div class="profile">
+		<div class="profile-left">
+			<div class="profile-info">
+				<%
+					// Assuming 'date' is a JavaScript Date object
+					var modifiedDate = new Date(refund.trip.tripDate);
+					modifiedDate.setHours(modifiedDate.getHours() + 4);
+					var options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+				%>
+				<div style="display: flex;">
+					<a href="/trips/<%= refund.trip._id %>/refund/<%= refund._id %>/edit" class="edit-icon"><i class="fas fa-edit"></i></a>
+				</div>
+				<a href="/trips/<%= refund.trip._id %>/refund/<%= refund._id %>/delete" class="delete-icon" onclick="return confirm('Are you sure you want to delete this refund request?')"><i class="fas fa-trash"></i></a>
+
+				<p>Trip Date: <%= modifiedDate.toLocaleString('en-US', options); %></p>
+				<p>Trip User Name: <%= refund.trip.tripUserName %></p>
+				<p>Trip User Email: <%= refund.trip.tripUserEmail %></p>
+				<p>Refund Amount: <%= refund.refundAmount %></p>
+				<p>Refund Reason: <%= refund.refundReason %></p>
+				<p>Refund Status: <%= refund.refundStatus %></p>
+				<p>Refund Notes: <%= refund.refundNotes %></p>
+			</div>
+		</div>
+
+	</div>
+</body>
+  <br>
+  <br>
+  <br>
+  <br>
+
+  

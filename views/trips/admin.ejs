@@ -1,0 +1,244 @@
+<script src="https://kit.fontawesome.com/dd1095c4ad.js" crossorigin="anonymous"></script>
+<style>
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+<div class="index-container">
+    <br>
+    <h2>Reservations</h2>
+    <select name="cat" id="original" class="postform">
+        <option value="-1">Sort By Status</option>
+        <option class="level-0" value="/trips/admin?tripStatus=Pending">Pending</option>
+        <option class="level-0" value="/trips/admin?tripStatus=Confirmed">Confirmed</option>
+        <option class="level-0" value="/trips/admin?tripStatus=Completed">Completed</option>
+        <option class="level-0" value="/trips/admin?tripStatus=Cancelled">Cancelled</option>
+        <option class="level-0" value="/trips/admin?tripStatus=In-Progress">In-Progress</option>
+        <option class="level-0" value="/trips/admin?paid=true">Paid</option>
+        <option class="level-0" value="/trips/admin?paid=false">Not Paid</option>
+        <option class="level-0" value="/trips/admin">All</option>
+    </select>
+    <% if (refundCount > 0) { %>
+        <% if (refundCount > 1) { %>
+            <p>You have <%= refundCount %> refund requests <a href="/trips/refund-requests?refundStatus=Pending">Click here to view them</a></p>
+        <% } else { %>
+            <p>You have <%= refundCount %> refund request <a href="/trips/refund-requests?refundStatus=Pending">Click here to view it</a></p>
+        <% } %>
+    <% } %>
+    <% if (currentUser && currentUser.isAdmin && loggedIn) { %>
+        <div class="d-flex flex-wrap justify-content-center">
+            <% for (var i = 0; i < trips.length; i++) { %>
+				<%
+					// Assuming 'date' is a JavaScript Date object
+					var modifiedDate = new Date(trips[i].tripDate);
+					modifiedDate.setHours(modifiedDate.getHours() + 4);
+					var options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+
+					let [hours, minutes] = trips[i].pickUpTime.split(":").map(Number);
+					let period = "AM";
+					
+					if (hours >= 12) {
+						period = "PM";
+						if (hours > 12) {
+							hours -= 12;
+						}
+					}
+
+					let time = `${hours}:${minutes.toString().padStart(2, "0")} ${period}`;
+				%>
+                <div class="card m-3">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= trips[i].tripUserName %></h5>
+                        <p>Trip Type: <%= trips[i].tripType %></p>
+                        <p>Trip Date: <%= modifiedDate.toLocaleString('en-US', options); %></p>
+                        <p>Pick Up Address: <%= trips[i].pickUpAddress %></p>
+                        <p>Drop Off Address: <%= trips[i].dropOffAddress %></p>
+                        <p>Pick Up Time: <%= time %></p>
+                        <p>Number of Passengers: <%= trips[i].num_of_passengers %></p>
+                        <p>Special Instructions: <%= trips[i].specialInstructions %></p>
+                        <p>Trip Status: <%= trips[i].tripStatus %></p>
+                        <p>Pay Status: <%= trips[i].paid %></p>
+                        <p>Car Type <%= trips[i].carType %></p>
+                        <% if (trips[i].tripStatus === "In-Progress") { %>
+                            <form action="/trips/<%= trips[i]._id %>/complete" method="POST">
+                            <button class="button" type="submit">Mark as Completed</button>
+                            </form>
+							<button class="btn btn-dark" onclick="window.location.href='/trips/<%= trips[i]._id %>/payment/completePayment'">Confirm Initial Payment</button>
+                        <% } else if (trips[i].tripStatus === "Confirmed" || trips[i].tripStatus === "Pending") { %>
+                            <% if (currentUser && currentUser.isAdmin && loggedIn) { %>
+								<% if (trips[i].tripStatus === "Pending") { %>
+									<button class="btn btn-success" onclick="window.location.href='/trips/<%= trips[i]._id %>/verify-edit'">Approve</button>
+									<button class="btn btn-danger" onclick="window.location.href='/trips/<%= trips[i]._id %>/cancel'">Deny</button>
+								<%# } else if (trips[i].tripStatus === "Confirmed" && trips[i].tripType === "Road Trip" && !trips[i].paid) { %>
+									
+								<% } else if (trips[i].tripStatus === "Confirmed") { %>
+									<form action="/trips/<%= trips[i]._id %>/in-progress" method="post" onsubmit="return confirm('Are you sure you want to update the trip status to In-Progress?')">
+									<button class="btn btn-primary" type="submit">Update to In-Progress</button>
+									</form>
+									<button class="btn btn-dark" onclick="window.location.href='/trips/<%= trips[i]._id %>/payment/completePayment'">Confirm Initial Payment</button>
+								<% } %>
+                            <% } %>
+						<% } %>
+						<% if (trips[i].tripStatus === "Completed") { %>
+							<button class="btn btn-dark" onclick="window.location.href='/trips/<%= trips[i]._id %>/payment/updatePayment'">Update Payment</button>
+							<button class="btn btn-dark" onclick="window.location.href='/trips/<%= trips[i]._id %>/payment/completePayment'">Confirm Payment</button>
+						<% } %>
+                        <button class="btn btn-info" onclick="window.location.href='/trips/<%= trips[i]._id %>'" style="color: white;"> More Info</button>
+  
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    <% } %>
+
+	<div class="pagination justify-content-center">
+		<% if (currentPage > 1) { %>
+			<a class="arrow arrow-left" href="?page=<%= currentPage - 1 %>&limit=<%= limit %>">
+				<span aria-hidden="true">&laquo;</span>
+				<span class="sr-only">Previous</span>
+			</a>
+		  <% } %>
+		<%
+		// Define a variable to track the loop count
+		let loopCount = 0;
+
+		// Find the index of the currentPage in the pages array
+		let currentPageIndex = pages.findIndex(function(page) {
+			return (typeof page === 'object' && page.hasOwnProperty('number')) ? page.number === currentPage : page === currentPage;
+		});
+		%>
+
+		<% for (let i = currentPageIndex; i < pages.length; i++) { %>
+			<% const page = pages[i]; %>
+
+			<% if (loopCount >= 5) { %>
+				<% break; %> <!-- Break the loop after displaying the currentPage and the following four numbers -->
+			<% } %>
+
+			<% if (typeof page === 'object' && page.hasOwnProperty('number')) { %>
+				<% if (page.number === currentPage) { %>
+				<a class="page-item active"><%= page.number %></a>
+				<% } else { %>
+				<a href="?tripStatus=<%=searchOptions %>&page=<%= page.number %>&limit=<%= limit %>"><%= page.number %></a>
+				<% } %>
+			<% } else if (typeof page === 'number') { %>
+				<% if (page === currentPage) { %>
+				<a class="page-item active"><%= page %></a>
+				<% } else { %>
+				<a href="?tripStatus=<%=searchOptions %>&page=<%= page %>&limit=<%= limit %>"><%= page %></a>
+				<% } %>
+			<% } %>
+
+			<% loopCount++; %>
+		<% } %>
+		<% if (currentPage < pages.length) { %>
+			<a class="arrow arrow-right" href="?page=<%= currentPage + 1 %>&limit=<%= limit %>">
+				<span aria-hidden="true">&raquo;</span>
+				<span class="sr-only">Next</span>
+			</a>
+		<% } %>
+	</div>
+    <div class="overlay"></div>
+
+    <div class="popup">
+        <div class="popup-content">
+            <!-- Content of the referenced page will be inserted here -->
+        </div>
+    </div>
+</div>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+</div>
+
+<script>
+    const selectElement = document.getElementById("original");
+    selectElement.addEventListener("change", function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const redirectUrl = selectedOption.value;
+        window.location.href = redirectUrl;
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const popupTriggerElements = document.querySelectorAll('.popup-trigger');
+        const overlay = document.querySelector('.overlay');
+        const popup = document.querySelector('.popup');
+        const popupContent = popup.querySelector('.popup-content');
+
+        popupTriggerElements.forEach(function (triggerElement) {
+            triggerElement.addEventListener('click', function (event) {
+                event.preventDefault();
+                const tripId = this.dataset.tripId;
+
+                // Show the overlay and popup
+                overlay.style.display = 'block';
+                popup.style.display = 'block';
+
+                // Fetch the content of the referenced page
+                fetch(`/trips/${tripId}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        // Extract the body content from the fetched page
+                        const parser = new DOMParser();
+                        const htmlDoc = parser.parseFromString(data, 'text/html');
+                        const bodyContent = htmlDoc.body.innerHTML;
+
+                        // Remove header and footer from the body content
+                        const bodyWithoutHeaderFooter = removeHeaderFooter(bodyContent);
+
+                        // Set the extracted body content to the popup
+                        popupContent.innerHTML = bodyWithoutHeaderFooter;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching page content:', error);
+                    });
+            });
+        });
+
+        // Close the popup when the overlay or close button is clicked
+        overlay.addEventListener('click', closePopup);
+        popup.addEventListener('click', closePopup);
+
+        function closePopup(event) {
+            const isOverlay = event.target === overlay;
+            const isCloseButton = event.target.classList.contains('popup-close');
+
+            if (isOverlay || isCloseButton) {
+                // Hide the overlay and popup
+                overlay.style.display = 'none';
+                popup.style.display = 'none';
+
+                // Clear the popup content
+                popupContent.innerHTML = '';
+            }
+        }
+
+        function removeHeaderFooter(bodyContent) {
+            const wrapperElement = document.createElement('div');
+            wrapperElement.innerHTML = bodyContent;
+
+            // Remove the header element
+            const headerElement = wrapperElement.querySelector('header');
+            if (headerElement) {
+                headerElement.remove();
+            }
+
+            // Remove the footer element
+            const footerElement = wrapperElement.querySelector('footer');
+            if (footerElement) {
+                footerElement.remove();
+            }
+
+            return wrapperElement.innerHTML;
+        }
+    });
+</script>
